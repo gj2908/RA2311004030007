@@ -24,7 +24,7 @@ const app = express();
 
 app.use(express.json());
 app.use(httpLoggerMiddleware);
-app.use("/api", routes);
+app.use("/evaluation-service", routes);
 
 // 404 handler
 app.use((req, res) => {

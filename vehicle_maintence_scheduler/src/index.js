@@ -36,7 +36,7 @@ app.use(express.json());
 app.use(httpLoggerMiddleware);
 
 // Register all API routes under /api
-app.use("/api", routes);
+app.use("/evaluation-service", routes);
 
 // Handle 404 for unregistered routes
 app.use((req, res) => {
