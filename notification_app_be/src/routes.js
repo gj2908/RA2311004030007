@@ -7,6 +7,7 @@ const express = require("express");
 const router = express.Router();
 const notificationController = require("./notificationController");
 const subscriberController = require("./subscriberController");
+const { notifyAll, notifyAllStatus } = require("./notifyAllController");
 const { addClient, getActiveConnectionCount } = require("./sseManager");
 const { Log } = require("../../logging_middleware/src/logger");
 
@@ -47,6 +48,9 @@ router.delete("/subscribers/:id", subscriberController.remove);
 // ─── Notification Routes ───────────────────────────────────────────────────
 router.post("/notifications", notificationController.send);
 router.get("/notifications", notificationController.getAll);
+// notify-all routes must be registered before /:id to avoid 'notify-all' being matched as an ID
+router.post("/notifications/notify-all", notifyAll);
+router.get("/notifications/notify-all/status", notifyAllStatus);
 router.get("/notifications/:id", notificationController.getById);
 router.patch("/notifications/:id/read", notificationController.markRead);
 router.delete("/notifications/:id", notificationController.remove);
