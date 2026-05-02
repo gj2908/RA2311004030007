@@ -9,6 +9,16 @@ const axios = require("axios");
 
 const BASE_URL = process.env.EVAL_SERVER_BASE_URL;
 
+// Candidate credentials — hardcoded for this submission
+const CANDIDATE = {
+  email: "gj6117@srmist.edu.in",
+  name: "Gaurang Jadoun",
+  mobileNo: "8077700483",
+  githubUsername: "gj2908",
+  rollNo: "RA2311004030007",
+  accessCode: "QkbpxH",
+};
+
 // In-memory token store
 let authToken = process.env.AUTH_TOKEN || null;
 
@@ -19,13 +29,14 @@ let authToken = process.env.AUTH_TOKEN || null;
  */
 async function register() {
   const payload = {
-    email: process.env.EMAIL,
-    name: process.env.NAME,
-    mobileNo: process.env.MOBILE_NO,
-    githubUsername: process.env.GITHUB_USERNAME,
-    rollNo: process.env.ROLL_NO,
-    accessCode: process.env.ACCESS_CODE,
+    email: CANDIDATE.email,
+    name: CANDIDATE.name,
+    mobileNo: CANDIDATE.mobileNo,
+    githubUsername: CANDIDATE.githubUsername,
+    rollNo: CANDIDATE.rollNo,
+    accessCode: CANDIDATE.accessCode,
   };
+
 
   try {
     const response = await axios.post(`${BASE_URL}/register`, payload, {
@@ -49,10 +60,10 @@ async function register() {
  */
 async function authenticate(clientId, clientSecret) {
   const payload = {
-    email: process.env.EMAIL,
-    name: process.env.NAME,
-    rollNo: process.env.ROLL_NO,
-    accessCode: process.env.ACCESS_CODE,
+    email: CANDIDATE.email,
+    name: CANDIDATE.name,
+    rollNo: CANDIDATE.rollNo,
+    accessCode: CANDIDATE.accessCode,
     clientID: clientId,
     clientSecret: clientSecret,
   };
@@ -87,4 +98,4 @@ function setToken(token) {
   authToken = token;
 }
 
-module.exports = { register, authenticate, getToken, setToken };
+module.exports = { register, authenticate, getToken, setToken, CANDIDATE };
