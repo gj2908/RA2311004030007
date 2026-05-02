@@ -7,12 +7,34 @@ const express = require("express");
 const router = express.Router();
 const notificationController = require("./notificationController");
 const subscriberController = require("./subscriberController");
+const { addClient, getActiveConnectionCount } = require("./sseManager");
 const { Log } = require("../../logging_middleware/src/logger");
 
 // Health check
 router.get("/health", (req, res) => {
   Log("backend", "info", "route", "GET /health - notification service is running");
-  res.status(200).json({ success: true, message: "Notification Service is running." });
+  res.status(200).json({ success: true, message: "Notification Service is running.", activeStreams: getActiveConnectionCount() });
+});
+
+// ─── Real-time SSE Stream ──────────────────────────────────────────────────
+// GET /api/notifications/stream?subscriberId=<id>
+// Opens a persistent SSE connection; server pushes new notifications in real-time
+router.get("/notifications/stream", (req, res) => {
+  const { subscriberId } = req.query;
+  if (!subscriberId) {
+    Log("backend", "warn", "route", "GET /notifications/stream - missing subscriberId");
+    return res.status(400).json({ success: false, error: "subscriberId query parameter is required." });
+  }
+
+  Log("backend", "info", "route", `GET /notifications/stream - subscriberId=${subscriberId}`);
+
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.flushHeaders();
+
+  addClient(subscriberId, res);
 });
 
 // ─── Subscriber Routes ─────────────────────────────────────────────────────

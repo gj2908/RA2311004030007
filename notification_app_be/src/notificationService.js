@@ -6,6 +6,7 @@
 const db = require("./db");
 const { Log } = require("../../logging_middleware/src/logger");
 const { NOTIFICATION_TYPES, NOTIFICATION_STATUS, NOTIFICATION_PRIORITY } = require("./constants");
+const { broadcast } = require("./sseManager");
 
 const VALID_TYPES = Object.values(NOTIFICATION_TYPES);
 const VALID_PRIORITIES = Object.values(NOTIFICATION_PRIORITY);
@@ -44,6 +45,9 @@ function sendNotification(data) {
   // Simulate dispatch - mark as sent
   const sent = db.updateNotification(notification.id, { status: "sent", sentAt: new Date().toISOString() });
   Log("backend", "info", "service", `Notification dispatched: id=${notification.id}, type=${type}, to=${subscriber.email}`);
+
+  // Push real-time event to any SSE-connected clients for this subscriber
+  broadcast(subscriberId, sent);
 
   return { success: true, data: sent };
 }
